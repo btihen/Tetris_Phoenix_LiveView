@@ -3,9 +3,14 @@ defmodule TetrisWeb.GameLive do
   alias Tetris.Tetromino
   alias Tetris.TimeAlive
 
+  @down_keys ["Enter", "ArrowDown"]
+
   def mount(_params, _sessions, socket) do
-    :timer.send_interval(1000, :sec)
-    :timer.send_interval(300, :tick)
+    # be sure we have a stable connection before backgrounding processes
+    if connected?(socket) do
+      :timer.send_interval(1000, :sec)
+      :timer.send_interval(300, :tick)
+    end
     new_socket = socket
               |> new_tetromino
               |> new_time
@@ -14,6 +19,7 @@ defmodule TetrisWeb.GameLive do
   end
 
   def handle_info(:tick, socket) do
+    # direction = [:cc, :cw, :nc] |> Enum.random
     updated_socket = socket
                   |> down
                   |> show
@@ -23,8 +29,42 @@ defmodule TetrisWeb.GameLive do
   def handle_info(:sec, socket) do
     updated_socket = socket
                   |> update_time
-                  # |> new_tetromino(socket)
     {:noreply, updated_socket}
+  end
+
+  def handle_event("keystroke", %{"key" => " "}, socket) do
+    updated_socket = socket
+                  |> rotate(:cc)
+                  |> show
+    {:noreply, updated_socket}
+  end
+  def handle_event("keystroke", %{"key" => "ArrowUp"}, socket) do
+    updated_socket = socket
+                  |> rotate(:cw)
+                  |> show
+    {:noreply, updated_socket}
+  end
+  def handle_event("keystroke", %{"key" => key}, socket) when key in @down_keys do
+    updated_socket = socket
+                  |> down
+                  |> show
+    {:noreply, updated_socket}
+  end
+  def handle_event("keystroke", %{"key" => "ArrowRight"}, socket) do
+    updated_socket = socket
+                  |> right
+                  |> show
+    {:noreply, updated_socket}
+  end
+  def handle_event("keystroke", %{"key" => "ArrowLeft"}, socket) do
+    updated_socket = socket
+                  |> left
+                  |> show
+    {:noreply, updated_socket}
+  end
+  # ignore all other keystrokes
+  def handle_event("keystroke", %{"key" => _key}, socket) do
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -32,27 +72,24 @@ defmodule TetrisWeb.GameLive do
     <section class="phx-hero">
       <h1>Wecome to Tetris<h1>
       <h2>Time Alive: <%= @time %> secs</h2>
-
-      <%= render_board(assigns) %>
-
-      <hr>
-
-      <%= render_info(assigns) %>
-
+      <div phx-window-keydown="keystroke">
+        <%= render_board(assigns) %>
+        <%= render_debug_info(assigns) %>
+      </div>
     </section>
     """
   end
 
   def render_board(assigns) do
     ~L"""
-    <svg width="200" height="400">
-      <rect width="200" height="400" style="fill:rgb(245,245,245);stroke-width:2;stroke:rgb(0,0,0)" />
-      <%= render_points(assigns) %>
+    <svg width="300" height="400">
+      <rect width="300" height="400" style="fill:rgb(245,245,245);stroke-width:2;stroke:rgb(0,0,0)" />
+      <%= render_falling_tetromino(assigns) %>
     </svg>
     """
   end
 
-  def render_points(assigns) do
+  def render_falling_tetromino(assigns) do
     ~L"""
       <% {red, green, blue} = @tetro.color %>
       <%= for {x, y} <- @points do %>
@@ -64,7 +101,7 @@ defmodule TetrisWeb.GameLive do
     """
   end
 
-  def render_info(assigns) do
+  def render_debug_info(assigns) do
     ~L"""
     <h3>
       Points: <%= inspect @points %>
@@ -82,17 +119,42 @@ defmodule TetrisWeb.GameLive do
   # everything ready to render
   defp show(socket) do
     assign( socket,
+            # tetro: Tetromino.show(socket.assigns.tetro)
             points: Tetromino.show(socket.assigns.tetro)
           )
   end
 
   # Actions
+  defp rotate(%{assigns: %{tetro: tetro}}=socket, direction) do
+    assign(socket, tetro: Tetromino.rotate(tetro, direction))
+    # assign(socket, rotation: Tetromino.rotate(tetro, direction))
+  end
+  # defp rotate(%{assigns: %{tetro: tetro}}=socket, :cw=direction) do
+  #   assign(socket, tetro: Tetromino.rotate(tetro))
+  # end
+  # start over when we hit bottom
   defp down(%{assigns: %{tetro: %{location: {_, 19}}}}=socket) do
     # assign(socket, tetro: Tetromino.new_random())
     new_tetromino(socket)
   end
   defp down(%{assigns: %{tetro: tetro}}=socket) do
     assign(socket, tetro: Tetromino.down(tetro))
+  end
+  # start over when we hit bottom
+  defp left(%{assigns: %{tetro: %{location: {0, _}}}}=socket) do
+    # assign(socket, tetro: Tetromino.new_random())
+    socket
+  end
+  defp left(%{assigns: %{tetro: tetro}}=socket) do
+    assign(socket, tetro: Tetromino.left(tetro))
+  end
+  # start over when we hit bottom
+  defp right(%{assigns: %{tetro: %{location: {10, _}}}}=socket) do
+    # assign(socket, tetro: Tetromino.new_random())
+    socket
+  end
+  defp right(%{assigns: %{tetro: tetro}}=socket) do
+    assign(socket, tetro: Tetromino.right(tetro))
   end
   defp update_time(%{assigns: %{time: time}}=socket) do
     assign(socket, time: TimeAlive.increment(time))

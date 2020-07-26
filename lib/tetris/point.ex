@@ -16,6 +16,35 @@ defmodule Tetris.Point do
     {x+1, y}
   end
 
+  def rotate(point, 0=_degrees), do: point
+  def rotate(point, 360=_degrees), do: point
+  def rotate(point, 90=_degrees) do
+    point
+    |> flip
+    |> transpose
+  end
+  def rotate(point, 180=_degrees) do
+    point
+    |> mirror
+    |> flip
+  end
+  def rotate(point, 270=_degrees) do
+    point
+    |> mirror
+    |> transpose
+  end
+  # def rotate(point, _degrees), do: point
+
+  def transpose({x,y}) do
+    {y,x}
+  end
+  def mirror({x,y}) do # vertical
+    {5-x, y}
+  end
+  def flip({x,y}) do
+    {x, 5-y}
+  end
+
   def move({x, y}, {delta_x, delta_y}) do
     {(x + delta_x), (y + delta_y)}
   end
