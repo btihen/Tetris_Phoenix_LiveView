@@ -7,7 +7,7 @@ defmodule Tetris.Tetromino do
   @width Enum.to_list -1..8
   @shapes     ~w[i j l o s t z]a
   @rotations    [0, 90, 180, 270]
-  @color_range  [0, 51, 153, 255] # Enum.to_list 0..255
+  # @color_range  [0, 51, 153, 255] # Enum.to_list 0..255
   @colors      %{ i: {0,    255,  255}, # pale blue (aqua)
                   j: {0,    0,    255}, # blue
                   l: {255,  153,  51},  # orange
@@ -39,12 +39,10 @@ defmodule Tetris.Tetromino do
     |> Points.move(tetro.location)
   end
 
-  # def show(tetro) do
-  #   IO.puts inspect tetro
-  #   tetro
-  #   |> tetro_shape
-  #   |> tetro_rotation
-  #   |> tetro_placement
+  def test_move(_old, new, true=_valid), do: new
+  def test_move(old, _new, _valid), do: old
+  # def test_move(old, new, valid) do
+  #   if valid, do: new, else: old
   # end
 
   def tetro_shape(tetro) do
@@ -71,14 +69,20 @@ defmodule Tetris.Tetromino do
     %{ tetro | location: Point.down(tetro.location)}
   end
 
-  def rotate(tetro, :cc=direction) do
-    tetro |> rotate_counterclockwise
-  end
-  def rotate(tetro, :cw=direction) do
+  def rotate(tetro) do
     tetro |> rotate_clockwise
   end
-  def rotate(tetro, _) do
-    tetro
+  def rotate(tetro, :cc=_direction) do
+    tetro |> rotate_counterclockwise
+  end
+  def rotate(tetro, :cw=_direction) do
+    tetro |> rotate_clockwise
+  end
+  def rotate_cw(tetro) do
+    tetro |> rotate_clockwise
+  end
+  def rotate_cc(tetro) do
+    tetro |> rotate_counterclockwise
   end
 
   # PRIVATE

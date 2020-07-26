@@ -2,9 +2,11 @@ defmodule Tetris.Points do
 
   alias Tetris.Point
 
-  @base {0,0}
-
   # reducers
+  def valid?(points) do
+    points |> Enum.all?( &Point.in_bounds?/1 )
+  end
+
   def rotation(points, degrees) do
     points
     |> Enum.map( &Point.rotate(&1, degrees) )
@@ -26,57 +28,50 @@ defmodule Tetris.Points do
   # end
 
   # constructors
-  def i_shape(base \\ @base) do
-    {x,y} = base
+  def i_shape do
     [
-                  {x, y-1},
-                  {x, y},
-                  {x, y+1},
-                  {x, y+2}
+              {2, 1},
+              {2, 2},
+              {2, 3},
+              {2, 4}
     ]
   end
-  def j_shape(base \\ @base) do
-    {x,y} = base
+  def j_shape do
     [
-                  {x, y-1},
-                  {x, y},
-      {x-1,y+1},  {x, y+1}
+                      {3, 1},
+                      {3, 2},
+              {2,3},  {3, 3}
     ]
   end
-  def l_shape(base \\ @base) do
-    {x,y} = base
+  def l_shape do
     [
-                  {x, y-1},
-                  {x, y},
-                  {x, y+1}, {x+1,y+1}
+              {2, 1},
+              {2, 2},
+              {2, 3}, {3,3}
     ]
   end
-  def o_shape(base \\ @base) do
-    {x, y} = base
+  def o_shape do
     [
-                  {x, y+1}, {x+1, y+1},
-                  {x, y+2}, {x+1, y+2}
+              {2, 2}, {3, 2},
+              {2, 3}, {3, 3}
     ]
   end
-  def s_shape(base \\ @base) do
-    {x, y} = base
+  def s_shape do
     [
-                  {x, y}, {x+1, y},
-      {x-1, y+1}, {x, y+1}
+              {2, 2}, {3, 2},
+      {1, 3}, {2, 3}
     ]
   end
-  def t_shape(base \\ @base) do
-    {x, y} = base
+  def t_shape do
     [
-      {x-1, y}, {x, y}, {x+1, y},
-                {x, y+1}
+      {1, 2}, {2, 2}, {3, 2},
+              {2, 3}
     ]
   end
-  def z_shape(base \\ @base) do
-    {x, y} = base
+  def z_shape do
     [
-      {x-1, y}, {x, y},
-                {x, y+1}, {x+1, y+1}
+      {1, 2}, {2, 2},
+              {2, 3}, {3, 3}
     ]
   end
 

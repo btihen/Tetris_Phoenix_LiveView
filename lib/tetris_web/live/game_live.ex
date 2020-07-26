@@ -141,7 +141,7 @@ defmodule TetrisWeb.GameLive do
     assign(socket, tetro: Tetromino.down(tetro))
   end
   # start over when we hit bottom
-  defp left(%{assigns: %{tetro: %{location: {0, _}}}}=socket) do
+  defp left(%{assigns: %{tetro: %{location: {-2, _}}}}=socket) do
     # assign(socket, tetro: Tetromino.new_random())
     socket
   end
@@ -149,7 +149,7 @@ defmodule TetrisWeb.GameLive do
     assign(socket, tetro: Tetromino.left(tetro))
   end
   # start over when we hit bottom
-  defp right(%{assigns: %{tetro: %{location: {10, _}}}}=socket) do
+  defp right(%{assigns: %{tetro: %{location: {11, _}}}}=socket) do
     # assign(socket, tetro: Tetromino.new_random())
     socket
   end
