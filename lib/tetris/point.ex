@@ -49,8 +49,8 @@ defmodule Tetris.Point do
     {(x + delta_x), (y + delta_y)}
   end
 
-  def in_bounds?({x, _y}) when x < 1, do: false
-  def in_bounds?({x, _y}) when x >10, do: false
+  def in_bounds?({x, _y}) when x < 0, do: false
+  def in_bounds?({x, _y}) when x >14, do: false
   def in_bounds?(_point), do: true
 
 end
