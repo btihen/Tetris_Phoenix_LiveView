@@ -10,17 +10,39 @@ defmodule Tetris.Game do
   end
 
   def move(game, move_function) do
+    {old, new, valid} = move_data(game, move_function)
+    valid_tetro = Tetromino.test_move(old, new, valid)
+    %{game | tetro: valid_tetro}
+  end
+
+  defp move_data(game, move_function) do
     old = game.tetro
     new = game.tetro
           |> move_function.()
     valid = new
           |> Tetromino.show
           |> Points.valid? #(&Points.all_valid?/1)
-    valid_tetro = Tetromino.test_move(old, new, valid)
-    %{game | tetro: valid_tetro}
+    {old, new, valid}
   end
-
-  def down(game),         do: game |> move(&Tetromino.down/1) |> show
+  def down(game) do
+    {old, new, valid} = move_data(game, &Tetromino.down/1)
+    valid_tetro = Tetromino.test_move(old, new, valid)
+    move_down_or_merge(game, old, new, valid)
+  end
+  defp move_down_or_merge(game, _old, new, true=_valid) do
+    %{ game | tetro: new }
+    |> show
+  end
+  defp move_down_or_merge(game, old, _new, false=_valid) do
+    game
+    |> merge(old)
+    |> new_tetromino()
+    |> show
+  end
+  def merge(game, old) do
+    game
+  end
+  # def down(game),         do: game |> move(&Tetromino.down/1) |> show
   def left(game),         do: game |> move(&Tetromino.left/1) |> show
   def right(game),        do: game |> move(&Tetromino.right/1) |> show
   def rotate(game, :cc),  do: game |> move(&Tetromino.rotate_cc/1) |> show
