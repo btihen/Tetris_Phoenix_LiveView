@@ -12,7 +12,6 @@ defmodule TetrisWeb.GameLive do
       :timer.send_interval(300, :tick)
     end
     new_socket = socket |> new_game
-    new_socket |> IO.inspect
     {:ok, new_socket}
   end
 
@@ -115,10 +114,10 @@ defmodule TetrisWeb.GameLive do
     assign(socket, game: Game.rotate(game, direction))
     # assign(socket, rotation: Tetromino.rotate(tetro, direction))
   end
-  # start over when we hit bottom
-  defp down(%{assigns: %{game: %{tetro: %{location: {_, y}}}}}=socket) when y > 15 do
-    new_tetromino(socket)
-  end
+  # # start over when we hit bottom
+  # defp down(%{assigns: %{game: %{tetro: %{location: {_, y}}}}}=socket) when y > 15 do
+  #   new_tetromino(socket)
+  # end
   defp down(%{assigns: %{game: game}}=socket) do
     assign(socket, game: Game.down(game))
   end
