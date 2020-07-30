@@ -1,7 +1,7 @@
 defmodule Tetris.Game do
   alias Tetris.{Points, Tetromino, TimeAlive}
 
-  defstruct tetro: Tetromino.new_random, points: [], time: 0, score: 0, junkyard: %{}
+  defstruct tetro: Tetromino.new_random, points: [], time: 0, score: 0, graveyard: %{}
 
   def new do
     __struct__()
@@ -21,9 +21,10 @@ defmodule Tetris.Game do
           |> move_function.()
     valid = new
           |> Tetromino.show
-          |> Points.valid? #(&Points.all_valid?/1)
+          |> Points.valid?(game.graveyard) #(&Points.all_valid?/1)
     {old, new, valid}
   end
+
   def down(game) do
     {old, new, valid} = move_data(game, &Tetromino.down/1)
     valid_tetro = Tetromino.test_move(old, new, valid)
@@ -39,9 +40,7 @@ defmodule Tetris.Game do
     |> new_tetromino()
     |> show
   end
-  def merge(game, old) do
-    game
-  end
+
   # def down(game),         do: game |> move(&Tetromino.down/1) |> show
   def left(game),         do: game |> move(&Tetromino.left/1) |> show
   def right(game),        do: game |> move(&Tetromino.right/1) |> show
@@ -49,6 +48,18 @@ defmodule Tetris.Game do
   def rotate(game, :cw),  do: game |> move(&Tetromino.rotate_cw/1) |> show
   def rotate(game, _),    do: game |> move(&Tetromino.rotate_cw/1) |> show
   def rotate(game),       do: game |> move(&Tetromino.rotate_cw/1) |> show
+
+  def merge(game, old_tetro) do
+    new_graveyard = old_tetro
+                  |> Tetromino.points_w_color
+                  |> Enum.into(game.graveyard)
+    %{game | graveyard: new_graveyard}
+  end
+
+  def graveyard_points(game) do
+    game.junkyard
+    |> Enum.map(fn {{x,y}, _color} -> {x,y} end)
+  end
 
   def update_time(game) do
     %{ game | time: TimeAlive.increment(game.time) }

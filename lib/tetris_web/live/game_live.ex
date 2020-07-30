@@ -75,15 +75,28 @@ defmodule TetrisWeb.GameLive do
     ~L"""
     <svg width="300" height="400">
       <rect width="300" height="400" style="fill:rgb(245,245,245);stroke-width:2;stroke:rgb(0,0,0)" />
-      <%= render_falling_tetromino(assigns) %>
+      <%# render_tetromino(assigns) %>
+      <%= render_tetromino_n_gaves(assigns) %>
     </svg>
     """
   end
 
-  def render_falling_tetromino(assigns) do
+  def render_tetromino(assigns) do
     ~L"""
       <% {red, green, blue} = @game.tetro.color %>
       <%= for {x, y} <- @game.points do %>
+        <rect
+            width="20" height="20"
+            x="<%= x*20 %>" y="<%= y*20 %>"
+            style="fill:rgb(<%= red %>,<%= green %>,<%= blue %>);stroke-width:1;stroke:rgb(0,0,0)" />
+      <% end %>
+    """
+  end
+
+  def render_tetromino_n_gaves(assigns) do
+    ~L"""
+    <% display_points = Tetromino.points_w_color(@game.tetro) |> Enum.into(@game.graveyard) |> Enum.map(&Tuple.to_list/1) %>
+      <%= for [{x, y}, {red, green, blue}] <- display_points do %>
         <rect
             width="20" height="20"
             x="<%= x*20 %>" y="<%= y*20 %>"
@@ -102,6 +115,7 @@ defmodule TetrisWeb.GameLive do
         location: <%= inspect @game.tetro.location %>
         color: <%= inspect @game.tetro.color %>
       </pre>
+      Graveyard: <%= inspect @game %>
     </h3>
     """
   end

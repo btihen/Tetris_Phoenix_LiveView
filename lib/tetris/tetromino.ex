@@ -39,6 +39,12 @@ defmodule Tetris.Tetromino do
     |> Points.move(tetro.location)
   end
 
+  def points_w_color(tetro) do
+    tetro
+    |> show
+    |> Enum.map(fn point -> {point, tetro.color} end)
+  end
+
   def test_move(_old, new, true=_valid), do: new
   def test_move(old, _new, _valid), do: old
   # def test_move(old, new, valid) do
@@ -112,7 +118,7 @@ defmodule Tetris.Tetromino do
 
   defp random_location do
     x = @width |> Enum.random
-    {x, -1}
+    {x, -3}
   end
 
   defp random_rotation do
