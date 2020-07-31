@@ -21,7 +21,8 @@ defmodule Tetris.Game do
           |> move_function.()
     valid = new
           |> Tetromino.show
-          |> Points.valid?(game.graveyard) #(&Points.all_valid?/1)
+          |> Points.valid?(game.graveyard)
+          #(&Points.all_valid?/1)
     {old, new, valid}
   end
 
@@ -33,12 +34,17 @@ defmodule Tetris.Game do
   defp move_down_or_merge(game, _old, new, true=_valid) do
     %{ game | tetro: new }
     |> show
+    |> inc_score(1)
   end
   defp move_down_or_merge(game, old, _new, false=_valid) do
     game
     |> merge(old)
     |> new_tetromino()
     |> show
+  end
+
+  def inc_score(game, value) do
+    %{ game | score: game.score + value }
   end
 
   # def down(game),         do: game |> move(&Tetromino.down/1) |> show

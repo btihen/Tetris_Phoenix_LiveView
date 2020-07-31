@@ -49,6 +49,20 @@ defmodule Tetris.Point do
     {(x + delta_x), (y + delta_y)}
   end
 
+  def valid?(point, graveyard) do
+    in_bounds?(point) and !collision?(point, graveyard)
+  end
+
+
+  # if graveyard(point) returns a value (color), !! returns a true - like in ruby
+  # if graveyard(point) returns a nil, !! returns a false, since there was nothing found
+  def collision?(point, graveyard), do: !!graveyard[point]
+  # def collision?(point, graveyard) do
+  #   grave_list = graveyard
+  #               |> Enum.map(fn {{x,y}, _color} -> {x,y} end)
+  #   point in grave_list
+  # end
+
   def in_bounds?({x, _y}) when x <  0, do: false
   def in_bounds?({x, _y}) when x > 14, do: false
   def in_bounds?({_x, y}) when y > 19, do: false

@@ -2,26 +2,30 @@ defmodule Tetris.Points do
 
   alias Tetris.Point
 
-  # reducers
+  # # reducers
   def valid?(points, graveyard) do
-    in_bounds = in_bounds?(points)
-    collision = collision?(points, graveyard)
-    is_valid?(in_bounds, collision)
-    # in_bounds?(points)
+    points |> Enum.all?( &Point.valid?(&1, graveyard) )
+    # points |> Enum.all?( fn point -> Point.valid?(point, graveyard) end )
   end
-  def is_valid?(true, false), do: true
-  def is_valid?(_in_bounds, _collision), do: false
+  # def valid?(points, graveyard) do
+  #   in_bounds = in_bounds?(points)
+  #   collision = collision?(points, graveyard)
+  #   is_valid?(in_bounds, collision)
+  #   # in_bounds?(points)
+  # end
+  # def is_valid?(true, false), do: true
+  # def is_valid?(_in_bounds, _collision), do: false
 
-  def in_bounds?(points) do
-    points |> Enum.all?( &Point.in_bounds?/1 )
-  end
+  # def in_bounds?(points) do
+  #   points |> Enum.all?( &Point.in_bounds?/1 )
+  # end
 
-  def collision?(points, graveyard) do
-    # points |> Enum.any?( &Point.in_bounds?/1 )
-# IO.inspect points
-    grave_list = graveyard |> Enum.map(fn {{x,y}, _color} -> {x,y} end)
-    Enum.any?(points, fn point -> point in grave_list end)
-  end
+  # def collision?(points, graveyard) do
+  #   # points |> Enum.any?( &Point.in_bounds?/1 )
+  #   # IO.inspect points
+  #   grave_list = graveyard |> Enum.map(fn {{x,y}, _color} -> {x,y} end)
+  #   Enum.any?(points, fn point -> point in grave_list end)
+  # end
 
   def rotation(points, degrees) do
     points
