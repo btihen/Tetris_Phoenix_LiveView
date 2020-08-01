@@ -1,0 +1,10 @@
+<section class="phx-hero">
+  <h1>Tetris  - GAME OVER<h1>
+  <h2>Stack 'em up!</h2>
+  <h3><b>Score: <%= @game.score %> points</b></h3>
+  <button phx-click="play">New Game</button>
+  <div phx-window-keydown="keystroke">
+    <%= render_board(assigns) %>
+    <%= render_debug_info(assigns) %>
+  </div>
+</section>

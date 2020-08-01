@@ -1,7 +1,8 @@
-defmodule TetrisWeb.GameLive do
+defmodule TetrisWeb.GameLive.Play do
   use TetrisWeb, :live_view
+  # alias Tetris.TimeAlive
   alias Tetris.Tetromino
-  alias Tetris.{Game, TimeAlive}
+  alias Tetris.Game
 
   @down_keys ["Enter", "ArrowDown"]
 
@@ -15,10 +16,20 @@ defmodule TetrisWeb.GameLive do
     {:ok, new_socket}
   end
 
+  def maybe_end_game(%{assigns: %{game: %{continue_game: false}}}=socket) do
+IO.inspect socket.assigns.game
+    %{assigns: %{game: game}}=socket
+    new_socket = assign(socket, game: game)
+    # push_patch(new_socket, to: "/game/over")
+    push_redirect(new_socket, to: "/game/over")
+  end
+  def maybe_end_game(socket), do: socket
+
   def handle_info(:tick, socket) do
     # direction = [:cc, :cw, :nc] |> Enum.random
     updated_socket = socket
                   |> down
+                  |> maybe_end_game
     {:noreply, updated_socket}
   end
 
@@ -58,20 +69,6 @@ defmodule TetrisWeb.GameLive do
     {:noreply, socket}
   end
 
-  def render(assigns) do
-    ~L"""
-    <section class="phx-hero">
-      <h1>Wecome to Tetris<h1>
-      <h2>Score: <%= @game.score %> points</h2>
-      <h2>Time Alive: <%= @game.time %> secs</h2>
-      <div phx-window-keydown="keystroke">
-        <%= render_board(assigns) %>
-        <%= render_debug_info(assigns) %>
-      </div>
-    </section>
-    """
-  end
-
   def render_board(assigns) do
     ~L"""
     <svg width="300" height="400">
@@ -109,14 +106,16 @@ defmodule TetrisWeb.GameLive do
   def render_debug_info(assigns) do
     ~L"""
     <h3>
-      Points: <%= inspect @game.points %>
+      Live Action: <%= inspect @live_action %>
       <pre>
+        game_over: <%= !@game.continue_game %>
+        continue_game: <%= @game.continue_game %>
         shape: <%= @game.tetro.shape %>
         rotation: <%= @game.tetro.rotation %>
         location: <%= inspect @game.tetro.location %>
         color: <%= inspect @game.tetro.color %>
+        Points: <%= inspect @game.points %>
       </pre>
-      Graveyard: <%= inspect @game %>
     </h3>
     """
   end
@@ -146,14 +145,14 @@ defmodule TetrisWeb.GameLive do
     assign(socket, game: Game.update_time(game))
   end
 
-  defp new_time(socket) do
-    assign(socket, time: TimeAlive.new())
-  end
+  # defp new_time(socket) do
+  #   assign(socket, time: TimeAlive.new())
+  # end
   defp new_game(socket) do
     assign(socket, game: Game.new())
   end
-  defp new_tetromino(socket) do
-    assign(socket, game: Game.new_tetromino(socket.assigns.game))
-  end
+  # defp new_tetromino(socket) do
+  #   assign(socket, game: Game.new_tetromino(socket.assigns.game))
+  # end
 
 end

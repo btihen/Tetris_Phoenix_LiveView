@@ -2,7 +2,7 @@ defmodule Tetris.Tetromino do
 
   alias Tetris.{Point, Points}
 
-  defstruct shape: :l, rotation: 0, location: {5, 0}, color: {0,0,255}
+  defstruct shape: :l, rotation: 0, location: {5, -3}, color: {0,0,255}
 
   @width Enum.to_list -1..8
   @shapes     ~w[i j l o s t z]a

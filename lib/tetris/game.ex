@@ -1,12 +1,15 @@
 defmodule Tetris.Game do
   alias Tetris.{Points, Tetromino, TimeAlive}
 
-  defstruct tetro: Tetromino.new_random, points: [], time: 0, score: 0, graveyard: %{}
+  defstruct tetro: Tetromino.new_random, points: [], time: 0, score: 0, graveyard: %{}, continue_game: true
 
-  def new do
-    __struct__()
-    |> new_tetromino
-    |> show
+  def new(options \\ []) do
+    game = __struct__(options)
+        |> new_tetromino
+        |> show
+IO.inspect options
+IO.inspect game
+    game
   end
 
   def move(game, move_function) do
@@ -40,6 +43,7 @@ defmodule Tetris.Game do
     game
     |> merge(old)
     |> new_tetromino()
+    |> game_over?
     |> show
   end
 
@@ -76,7 +80,15 @@ defmodule Tetris.Game do
   end
 
   def new_tetromino(game) do
-    %{ game | tetro: Tetromino.new_random() }
+    %{ game | tetro: Tetromino.new_random()}
+  end
+
+  defp game_over?(game) do
+    new_is_valid = game.tetro
+                |> Tetromino.show
+                |> Points.valid?(game.graveyard)
+    continue_game = new_is_valid and game.continue_game
+    %{game | continue_game: continue_game}
   end
 
 end
