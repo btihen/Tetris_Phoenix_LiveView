@@ -21,7 +21,8 @@ defmodule TetrisWeb.Router do
     live "/game/play", GameLive.Play, :play
     live "/game/welcome", GameLive.Welcome, :welcome
     live "/game", GameLive.Welcome, :welcome
-    live "/", PageLive, :index
+    live "/", GameLive.Welcome, :welcome
+    # live "/", PageLive, :index
   end
 
   # Other scopes may use custom stacks.

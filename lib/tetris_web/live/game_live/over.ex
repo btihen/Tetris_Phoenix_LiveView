@@ -6,11 +6,10 @@ defmodule TetrisWeb.GameLive.Over do
 
   # @down_keys ["Enter", "ArrowDown"]
 
-  def mount(_params, _sessions, socket) do
-# IO.inspect socket.assigns.game
-IO.inspect Map.get(socket.assigns, :game)
-    game_done  = Map.get(socket.assigns, :game) || Game.new(continue_game: false)
-    new_socket = assign(socket,game: game_done)
+  def mount(params, _sessions, socket) do
+    score = params["score"] || 0
+    # game_done  = Map.get(socket.assigns, :game) || Game.new(continue_game: false)
+    new_socket = assign(socket, score: score)
 # IO.inspect socket
 # IO.inspect game_done
 # IO.inspect game_done.graveyard

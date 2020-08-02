@@ -17,11 +17,9 @@ defmodule TetrisWeb.GameLive.Play do
   end
 
   def maybe_end_game(%{assigns: %{game: %{continue_game: false}}}=socket) do
-IO.inspect socket.assigns.game
     %{assigns: %{game: game}}=socket
     new_socket = assign(socket, game: game)
-    # push_patch(new_socket, to: "/game/over")
-    push_redirect(new_socket, to: "/game/over")
+    push_redirect(new_socket, to: "/game/over?score=#{socket.assigns.game.score}")
   end
   def maybe_end_game(socket), do: socket
 
